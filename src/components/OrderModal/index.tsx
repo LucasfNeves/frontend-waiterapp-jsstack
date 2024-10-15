@@ -10,6 +10,7 @@ interface OrderModalProps {
   order: Order | null
   handleCancelOrder: () => Promise<void>
   isLoading: boolean
+  handleChangeOrderStatus: () => Promise<void>
 }
 
 export function OrderModal({
@@ -18,6 +19,7 @@ export function OrderModal({
   order,
   handleCancelOrder,
   isLoading,
+  handleChangeOrderStatus,
 }: OrderModalProps) {
   if (!isOpen || !order) {
     return null
@@ -39,8 +41,6 @@ export function OrderModal({
     const orderTotal = order.products.reduce((acc, product) => {
       return (acc += product.product.price * product.quantity)
     }, 0)
-
-    console.log(orderTotal)
 
     return (
       <Overlay>
@@ -105,10 +105,30 @@ export function OrderModal({
           </OrderDetails>
 
           <Actions>
-            <button disabled={isLoading} type="button" className="primary">
-              <span>👨🏻‍🍳</span>
-              <strong>Iniciar Produção</strong>
-            </button>
+            {order.status !== 'DONE' && (
+              <button
+                onClick={handleChangeOrderStatus}
+                disabled={isLoading}
+                type="button"
+                className="primary"
+              >
+                <span>
+                  {order.status === 'WAITING'
+                    ? '👨🏻‍🍳'
+                    : order.status === 'IN_PRODUCTION'
+                      ? '✅'
+                      : ''}
+                </span>
+
+                <strong>
+                  {order.status === 'WAITING'
+                    ? 'Preparar Pedido'
+                    : order.status === 'IN_PRODUCTION'
+                      ? 'Finalizar Pedido'
+                      : ''}
+                </strong>
+              </button>
+            )}
 
             <button
               disabled={isLoading}

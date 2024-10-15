@@ -12,26 +12,51 @@ export function Orders() {
     setOrders(response.data)
   }
 
-
   useEffect(() => {
-    getOrder();
-  }, []);
+    getOrder()
+  }, [orders])
 
- function handleCancelOrders(orderId: string) {
-  setOrders((prevState) => prevState.filter(order => order._id !== orderId))
- }
+  function handleCancelOrders(orderId: string) {
+    setOrders((prevState) => prevState.filter((order) => order._id !== orderId))
+  }
+
+  function handleOrderStatusChange(orderId: string, status: Order['status']) {
+    setOrders((prevState) =>
+      prevState.map((order) =>
+        order._id === orderId ? { ...order, status } : order,
+      ),
+    )
+  }
 
   const waitingOrders = orders.filter((order) => order.status === 'WAITING')
-  const preparingOrders = orders.filter((order) => order.status === 'IN_PRODUCTION')
+  const preparingOrders = orders.filter(
+    (order) => order.status === 'IN_PRODUCTION',
+  )
   const readyOrders = orders.filter((order) => order.status === 'DONE')
-
-
 
   return (
     <Container>
-      <OrdersBoard onCancelOrder={handleCancelOrders} icon="🕒" title="Fila de espera" orders={waitingOrders} />
-      <OrdersBoard onCancelOrder={handleCancelOrders} icon="👨🏻‍🍳" title="Em preparação" orders={preparingOrders} />
-      <OrdersBoard onCancelOrder={handleCancelOrders} icon="✅" title="Pronto" orders={readyOrders} />
+      <OrdersBoard
+        onChangeOrderStatus={handleOrderStatusChange}
+        onCancelOrder={handleCancelOrders}
+        icon="🕒"
+        title="Fila de espera"
+        orders={waitingOrders}
+      />
+      <OrdersBoard
+        onChangeOrderStatus={handleOrderStatusChange}
+        onCancelOrder={handleCancelOrders}
+        icon="👨🏻‍🍳"
+        title="Em preparação"
+        orders={preparingOrders}
+      />
+      <OrdersBoard
+        onChangeOrderStatus={handleOrderStatusChange}
+        onCancelOrder={handleCancelOrders}
+        icon="✅"
+        title="Pronto"
+        orders={readyOrders}
+      />
     </Container>
   )
 }
